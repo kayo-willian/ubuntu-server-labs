@@ -1,291 +1,419 @@
-# Ubuntu Server Networking
+# Lab 02 - Ubuntu Server Networking
 
-## Overview
+## Objective
 
-This laboratory introduces basic network configuration and connectivity verification on Ubuntu Server.
+Understand the basic network configuration and operation of an Ubuntu Server, including network interfaces, IP addressing, routing, DNS, connectivity testing, and remote administration through SSH.
 
-The goal is to understand how Ubuntu identifies network interfaces, IP addresses, routing information, default gateways, and DNS configuration, while relating these concepts to network administration practices already explored with Cisco IOS.
+The objective of this lab was not to modify the network configuration, but to understand how Ubuntu Server handles networking and verify that the server was correctly connected and reachable.
 
-The laboratory uses the Ubuntu Server virtual machine configured with VirtualBox NAT.
+---
 
-## Lab Objective
+## Environment
 
-The objectives of this laboratory are to:
+The Ubuntu Server VM was configured using VirtualBox with a NAT network adapter.
 
-* Identify the network interfaces available on Ubuntu Server.
-* Identify the IPv4 and IPv6 addresses assigned to a network interface.
-* Understand CIDR notation.
-* Identify the directly connected network.
-* Identify the default gateway.
-* Verify connectivity with the local gateway.
-* Verify external IP connectivity.
-* Verify DNS name resolution.
-* Identify the DNS server being used by Ubuntu.
-* Relate Linux networking concepts to equivalent concepts already studied with Cisco IOS.
+The server received its network configuration automatically through DHCP.
 
-## Network Configuration
+---
 
-The Ubuntu Server network interface identified during the laboratory was:
+## 1. Network Interface Identification
+
+### `ip addr`
+
+The `ip addr` command displays network interfaces and IP addresses configured on the Linux system.
+
+I used this command to identify the network interface assigned to the Ubuntu Server VM and verify its IPv4 address.
+
+The main interface identified was:
 
 ```text
 enp0s3
 ```
 
-The interface was operational and had the following IPv4 configuration:
+The server received the following IPv4 address:
 
 ```text
 10.0.2.15/24
 ```
 
-The `/24` prefix corresponds to the subnet mask:
+The loopback interface was also present:
 
 ```text
-255.255.255.0
-```
-
-The address was obtained dynamically through DHCP.
-
-## Network Interface Verification
-
-### `ip addr`
-
-The `ip addr` command displays network interfaces and their configured addresses.
-
-It was used to identify the network interface assigned to the Ubuntu Server and verify its IPv4 configuration.
-
-Relevant information observed:
-
-```text
-Interface: enp0s3
-IPv4:      10.0.2.15/24
-State:     UP
-```
-
-The system also contains the `lo` loopback interface:
-
-```text
+lo
 127.0.0.1/8
 ```
 
-The loopback interface is used for communication within the local system and is different from the physical or virtual network interface used to communicate with other systems.
+The `enp0s3` interface was active and configured through DHCP.
 
-## Routing Table
+In Cisco IOS, a conceptual equivalent for quickly checking interfaces and their IP addresses would be:
+
+```text
+show ip interface brief
+```
+
+The commands are not equivalent in syntax or output, but both are commonly used to obtain a quick view of network interfaces and addressing.
+
+---
+
+## 2. Routing Table
 
 ### `ip route`
 
-The `ip route` command displays the routes known to the Linux kernel.
+The `ip route` command displays the routing table used by the Linux system.
 
-The following routes were observed:
+The server had the following relevant routes:
 
 ```text
 default via 10.0.2.2 dev enp0s3
 10.0.2.0/24 dev enp0s3
 ```
 
-The default route indicates that traffic destined for networks not directly known by the server is sent through:
+The default gateway was:
 
 ```text
 10.0.2.2
 ```
 
-Therefore, `10.0.2.2` is the current default gateway for the Ubuntu Server.
-
-The route:
+The directly connected network was:
 
 ```text
-10.0.2.0/24 dev enp0s3
+10.0.2.0/24
 ```
 
-indicates that the `10.0.2.0/24` network is directly connected through `enp0s3`.
+The default route allows traffic destined for networks outside the local `10.0.2.0/24` network to be forwarded through `10.0.2.2`.
 
-### Relation to Cisco IOS
+A conceptual comparison in Cisco IOS would be:
 
-The concepts are similar to information observed with Cisco IOS:
+```text
+show ip route
+```
 
-| Networking Concept       | Linux      | Cisco IOS                 |
-| ------------------------ | ---------- | ------------------------- |
-| Interface and IP address | `ip addr`  | `show ip interface brief` |
-| Routing table            | `ip route` | `show ip route`           |
-| Connectivity test        | `ping`     | `ping`                    |
+---
 
-The commands are not identical, but they expose similar networking concepts.
+## 3. Connectivity Testing
 
-## Connectivity Testing
+Network connectivity was tested at different levels to determine whether the server could communicate with the local network, external IP addresses, and domain names.
 
-After identifying the interface, IP address, and default gateway, connectivity was tested progressively.
-
-### Gateway Connectivity
-
-The first test checked communication between the Ubuntu Server and its default gateway:
+### Local gateway
 
 ```bash
 ping -c 4 10.0.2.2
 ```
 
-Result:
+The test was successful with no packet loss.
 
-```text
-4 packets transmitted
-4 received
-0% packet loss
-```
+This verified connectivity with the configured default gateway.
 
-This confirmed that the server could successfully communicate with the gateway.
-
-### External IP Connectivity
-
-The next test used a public IP address:
+### External IP address
 
 ```bash
 ping -c 4 8.8.8.8
 ```
 
-Result:
+The test was successful with:
 
 ```text
-4 packets transmitted
-4 received
 0% packet loss
 ```
 
-This confirmed that the server had IP connectivity beyond its local network.
+This confirmed that the server could reach an external IP address.
 
-At this point, connectivity to the Internet had been verified without depending on DNS name resolution.
-
-## DNS Resolution
-
-IP connectivity alone does not guarantee that domain names can be resolved.
-
-To test DNS resolution, the following command was executed:
+### Domain name
 
 ```bash
 ping -c 4 google.com
 ```
 
-The server successfully resolved `google.com` to an IPv4 address and received replies.
+The test was also successful.
 
-Observed result:
+This was important because it tested not only network connectivity, but also DNS name resolution.
 
-```text
-4 packets transmitted
-4 received
-0% packet loss
-```
+---
 
-This demonstrated that both network connectivity and DNS name resolution were working.
-
-## DNS Configuration
+## 4. DNS Configuration
 
 ### `resolvectl status`
 
-The `resolvectl status` command was used to inspect the DNS configuration currently used by the system.
+The `resolvectl status` command was used to inspect the DNS configuration currently being used by the system.
 
-The relevant configuration for `enp0s3` was:
-
-```text
-Current DNS Server: 10.0.2.3
-DNS Servers:       10.0.2.3
-DNS Domain:        home
-```
-
-Therefore, the Ubuntu Server was using:
+The configured DNS server was:
 
 ```text
 10.0.2.3
 ```
 
-as its DNS server.
-
-This explains why the previous `ping google.com` test succeeded: Ubuntu was able to query its configured DNS server and obtain an IP address for the hostname.
-
-## Connectivity Verification
-
-The tests were performed progressively:
+The DNS search domain was:
 
 ```text
-Ubuntu Server
-10.0.2.15
-      |
-      | ping
-      v
-Default Gateway
-10.0.2.2
-      |
-      | Internet connectivity
-      v
-8.8.8.8
+home
 ```
 
-DNS resolution was verified separately:
+Since `ping google.com` was successful, DNS resolution was working correctly.
+
+---
+
+## 5. Netplan Configuration
+
+Ubuntu Server uses Netplan as the configuration layer for network interfaces.
+
+The available Netplan configuration file was identified with:
+
+```bash
+ls /etc/netplan/
+```
+
+The configuration was then inspected with:
+
+```bash
+sudo cat /etc/netplan/50-cloud-init.yaml
+```
+
+The configuration contained:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    enp0s3:
+      dhcp4: true
+```
+
+This configuration means that the `enp0s3` interface obtains its IPv4 configuration automatically through DHCP.
+
+No manual static IP configuration was applied during this lab.
+
+---
+
+## 6. Network Status and `networkctl`
+
+### `sudo netplan status`
+
+The command was used to verify the current state of the Netplan configuration.
+
+### `networkctl status enp0s3`
+
+The `networkctl` command provided additional information about the network interface.
+
+The interface was reported as:
 
 ```text
-google.com
-     |
-     | DNS query
-     v
-10.0.2.3
-     |
-     | resolved address
-     v
-142.250.78.206
+State: routable (configured)
 ```
 
-The exact public IP returned by DNS may change over time.
+The interface was online and had DHCP4 configured.
 
-## Troubleshooting
-
-No network connectivity problems were encountered during this laboratory.
-
-The verification process was intentionally performed in stages rather than immediately testing a domain name.
-
-This approach makes troubleshooting easier because different components can be isolated:
+Relevant information included:
 
 ```text
-Gateway
-   ↓
-External IP
-   ↓
-DNS resolution
-   ↓
-Hostname connectivity
+DHCP4: 10.0.2.2
+DNS: 10.0.2.3
+Driver: e1000
+Speed: 1Gbps
+Duplex: full
+MTU: 1500
 ```
 
-If the gateway test had failed, the investigation would focus first on the local interface, IP configuration, subnet, and virtual network.
+This provided a more detailed view of how the network interface was operating.
 
-If `8.8.8.8` had failed while the gateway worked, the investigation would move toward routing or Internet connectivity.
+---
 
-If `8.8.8.8` worked but `google.com` failed, DNS would become the primary area of investigation.
+# 7. Remote Administration with SSH
 
-## Lessons Learned
+After verifying the server's network configuration, the next step was to access the Ubuntu Server remotely instead of interacting with the VM console.
 
-This laboratory demonstrated that Linux provides direct tools for inspecting the same fundamental networking concepts encountered when working with Cisco devices.
+OpenSSH Server had been installed during the Ubuntu Server installation.
 
-The `ip` command family can be used to inspect interfaces and routing information, while `ping` provides a simple method for verifying connectivity.
+### Checking the SSH service
 
-The tests also demonstrated why IP connectivity and DNS resolution should be treated as separate troubleshooting steps.
+The service was initially found to be inactive:
 
-## Key Takeaways
+```bash
+sudo systemctl status ssh
+```
 
-1. `enp0s3` is the network interface used by the Ubuntu Server VM.
+The relevant state was:
 
-2. The server received the IPv4 address `10.0.2.15/24` through DHCP.
+```text
+Active: inactive (dead)
+```
 
-3. The `10.0.2.0/24` network is directly connected to `enp0s3`.
+This demonstrated an important distinction:
 
-4. `10.0.2.2` is the default gateway.
+Installing a service does not necessarily mean that the service is currently running.
 
-5. `ip addr` can be used to inspect network interfaces and addresses.
+The SSH service was started with:
 
-6. `ip route` can be used to inspect the Linux routing table.
+```bash
+sudo systemctl start ssh
+```
 
-7. The server successfully communicated with its default gateway.
+After starting it, the status was checked again:
 
-8. The server successfully reached `8.8.8.8`, confirming external IP connectivity.
+```bash
+sudo systemctl status ssh
+```
 
-9. The server successfully resolved `google.com`, confirming DNS resolution.
+The service was then:
 
-10. `resolvectl status` showed `10.0.2.3` as the configured DNS server.
+```text
+Active: active (running)
+```
 
-11. Network troubleshooting is easier when connectivity is tested progressively rather than treating the network as a single component.
+The output also confirmed that `sshd` was listening on port 22:
 
-12. Linux and Cisco IOS use different commands, but the underlying networking concepts remain largely the same.
+```text
+Server listening on 0.0.0.0 port 22.
+Server listening on :: port 22.
+```
+
+---
+
+## 8. Verifying the SSH Listening Port
+
+The listening sockets were verified with:
+
+```bash
+sudo ss -tlnp | grep :22
+```
+
+The result showed:
+
+```text
+LISTEN ... 0.0.0.0:22
+LISTEN ... [::]:22
+```
+
+This confirmed that the SSH server was listening for incoming connections on TCP port 22.
+
+The `ss` command is useful when troubleshooting services because it allows the administrator to verify whether a process is actually listening on the expected network port.
+
+---
+
+# 9. VirtualBox NAT Port Forwarding
+
+The Ubuntu Server VM uses a NAT network.
+
+Because of this, the Ubuntu host cannot simply connect directly to the guest's `10.0.2.15` address as though both machines were connected to the same physical network.
+
+A VirtualBox NAT port forwarding rule was therefore configured to expose the SSH service.
+
+The forwarding was configured as:
+
+```text
+Host: 127.0.0.1:2222
+        |
+        v
+Guest: 10.0.2.15:22
+```
+
+This means that a connection made to port `2222` on the Ubuntu host is forwarded by VirtualBox to port `22` on the Ubuntu Server.
+
+---
+
+# 10. SSH Troubleshooting
+
+The first attempt to connect remotely failed:
+
+```bash
+ssh -p 2222 kayo@127.0.0.1
+```
+
+The connection returned:
+
+```text
+kex_exchange_identification: read: Connection reset by peer
+Connection reset by 127.0.0.1 port 2222
+```
+
+A connectivity test was also performed against the forwarded port:
+
+```bash
+nc -vz 127.0.0.1 2222
+```
+
+The result indicated that the connection was being refused.
+
+At this point, the SSH service inside the server had already been verified as running and listening on port 22.
+
+The problem was ultimately identified as an incorrect port configuration in the VirtualBox port forwarding rule.
+
+After correcting the forwarded port, the SSH connection was attempted again.
+
+---
+
+# 11. Successful Remote Access
+
+The final SSH connection was successful using:
+
+```bash
+ssh -p 2222 kayo@127.0.0.1
+```
+
+After authentication, the server displayed:
+
+```text
+Welcome to Ubuntu 24.04.4 LTS
+```
+
+The shell prompt changed to:
+
+```text
+kayo@ubuntu-server:~$
+```
+
+This confirmed that the terminal session was now running on the Ubuntu Server.
+
+The important distinction is:
+
+```text
+kanye@ubuntu:~$
+```
+
+represents the Ubuntu host machine, while:
+
+```text
+kayo@ubuntu-server:~$
+```
+
+represents the Ubuntu Server running inside the VM.
+
+From this point forward, the Ubuntu Server will be administered primarily through SSH from the terminal of the host PC.
+
+---
+
+# Troubleshooting Summary
+
+| Problem                             | Investigation                           | Solution                                  |
+| ----------------------------------- | --------------------------------------- | ----------------------------------------- |
+| SSH service was inactive            | `systemctl status ssh`                  | Started with `systemctl start ssh`        |
+| SSH connection was being reset      | Checked SSH service and listening ports | Confirmed `sshd` was listening on port 22 |
+| Host could not connect to port 2222 | `nc -vz 127.0.0.1 2222`                 | Corrected VirtualBox port forwarding      |
+| SSH connection succeeded            | `ssh -p 2222 kayo@127.0.0.1`            | Remote administration established         |
+
+---
+
+# Key Takeaways
+
+* Linux network interfaces can be inspected with `ip addr`.
+* Linux routing information can be inspected with `ip route`.
+* The default gateway determines where traffic outside the local network is forwarded.
+* DNS configuration can be inspected with `resolvectl status`.
+* Netplan defines the network configuration applied to Ubuntu Server.
+* `networkctl` provides detailed information about the state of network interfaces.
+* A service can be installed without currently being active.
+* `systemctl` is used to inspect and manage system services.
+* `ss` can be used to verify whether a service is listening on a network port.
+* SSH provides remote command-line access to the server.
+* VirtualBox NAT requires port forwarding when the host needs to access a service running inside the guest.
+* Troubleshooting should isolate each layer of the connection instead of changing multiple configurations at once.
+* The Ubuntu Server can now be administered remotely from the host PC terminal through SSH.
+
+---
+
+## Lab Status
+
+**Completed**
+
+The basic Ubuntu Server networking environment was inspected and validated, and remote administration through SSH was successfully established.
+
+Further server administration tasks will be performed remotely through the SSH terminal rather than through the VM console.
