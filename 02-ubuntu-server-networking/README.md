@@ -366,7 +366,7 @@ This confirmed that the terminal session was now running on the Ubuntu Server.
 The important distinction is:
 
 ```text
-kanye@ubuntu:~$
+kayo@ubuntu:~$
 ```
 
 represents the Ubuntu host machine, while:
