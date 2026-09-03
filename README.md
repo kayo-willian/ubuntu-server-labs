@@ -123,23 +123,6 @@ The documentation is organized into four useful categories:
 
 Learning how to locate and use the official documentation is itself part of the administration skill being developed through this project.
 
-## Repository Structure
-
-Each laboratory is maintained as an independent directory.
-
-```text
-ubuntu-server-labs/
-│
-├── README.md
-│
-├── 01-installation/
-│   └── README.md
-│
-└── ...
-```
-
-The structure will evolve naturally as new subjects are studied.
-
 ## Purpose
 
 This repository is intended to become a practical Linux administration knowledge base built through real configuration, experimentation, verification, and troubleshooting.
