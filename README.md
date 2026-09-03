@@ -40,6 +40,7 @@ Commands are documented together with their purpose, expected behavior, observed
 | --- | ------------------------------------------------ | ------------------------------------------------------------------|
 | 01  | [Ubuntu Server Installation](./01-installation/) | Installation and initial configuration of Ubuntu Server 24.04 LTS |
 | 02  | [Ubuntu Server Networking](./02-ubuntu-server-networking/) | Network interfaces, IP addressing, routing, default gateway, DNS, connectivity testing, and troubleshooting |
+| 03 | [Ubuntu Server System Administration](./03-system-administration) | System identification, CPU and memory resources, storage, services, systemd, SSH administration, and initial server inventory |
 
 
 
