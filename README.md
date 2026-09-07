@@ -43,6 +43,8 @@ Commands are documented together with their purpose, expected behavior, observed
 | 03 | [Server System Administration](./03-system-administration/README.md) | System identification, CPU and memory resources, storage, services, systemd, SSH administration, and initial server inventory |
 | 04 | [Users, Groups & Permissions](./04-users-groups-permissions/README.md) | User management, groups, file permissions, ownership, SGID, sudo and least privilege |
 | 05 | [Packages & Updates](./05-packages-and-updates/README.md) | APT, DPKG, package installation, package removal, updates, repositories |
+| 06 | [Web Server](./06-web-server/README.md) | Nginx, HTTP, TCP ports, systemctl, curl, web root, VirtualBox port forwarding |
+
 
 
 
