@@ -39,9 +39,10 @@ Commands are documented together with their purpose, expected behavior, observed
 | Lab | Topic                                            | Description                                                       |
 | --- | ------------------------------------------------ | ------------------------------------------------------------------|
 | 01  | [Installation](./01-installation/README.md) | Installation and initial configuration of Ubuntu Server 24.04 LTS |
-| 02  | [Networking](./02-ubuntu-server-networking/) | Network interfaces, IP addressing, routing, default gateway, DNS, connectivity testing, and troubleshooting |
-| 03 | [Server System Administration](./03-system-administration) | System identification, CPU and memory resources, storage, services, systemd, SSH administration, and initial server inventory |
-| 04 | [Users, Groups & Permissions](./04-users-groups-permissions/) | User management, groups, file permissions, ownership, SGID, sudo and least privilege |
+| 02  | [Networking](./02-ubuntu-server-networking/README.md) | Network interfaces, IP addressing, routing, default gateway, DNS, connectivity testing, and troubleshooting |
+| 03 | [Server System Administration](./03-system-administration/README.md) | System identification, CPU and memory resources, storage, services, systemd, SSH administration, and initial server inventory |
+| 04 | [Users, Groups & Permissions](./04-users-groups-permissions/README.md) | User management, groups, file permissions, ownership, SGID, sudo and least privilege |
+| 05 | [Packages & Updates](./05-packages-and-updates/README.md) | APT, DPKG, package installation, package removal, updates, repositories |
 
 
 
